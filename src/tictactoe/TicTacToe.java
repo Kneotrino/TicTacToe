@@ -30,6 +30,7 @@ public class TicTacToe {
      */
     public  static Controller controller;
     private static final int BOARD_SIZE = 3; // Scalable 2>
+    private static boolean BOT_ENABLED = true;
     public  static mainView view;
     
     /**
@@ -39,7 +40,7 @@ public class TicTacToe {
     public TicTacToe() {
         int TicTacToeGrid = mainView.TicTacToeBox(BOARD_SIZE);        
         view = new mainView();
-        controller = new Controller(view, TicTacToeGrid);
+        controller = new Controller(view, TicTacToeGrid,BOT_ENABLED);
     }
 
     /**
@@ -56,7 +57,7 @@ public class TicTacToe {
         int TicTacToeGrid = mainView.TicTacToeBox(BOARD_SIZE);   
         view.dispose();
         view = new mainView();
-        controller = new Controller(view, TicTacToeGrid);
+        controller = new Controller(view, TicTacToeGrid,BOT_ENABLED);
         controller.play();
     }        
 }

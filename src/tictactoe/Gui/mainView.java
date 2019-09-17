@@ -5,11 +5,11 @@
  */
 package tictactoe.Gui;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
+
 import tictactoe.TicTacToe;
+
+import java.awt.*;
 
 /**
  *
@@ -22,7 +22,7 @@ public class mainView extends javax.swing.JFrame {
      */
     public mainView() {
         initComponents();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
     
     /**
@@ -192,9 +192,24 @@ public class mainView extends javax.swing.JFrame {
     public static int TicTacToeBox(int BOARD_SIZE)
     {
         setUpStyle();
+
         SpinnerNumberModel sModel = new SpinnerNumberModel(BOARD_SIZE, 3, 20, 1);
+        String[] difficultyStrings = { "No BOT", "Easy", "Moderate", "Hard", "Insane" };
+
+        JPanel myPanel = new JPanel();
         JSpinner spinner = new JSpinner(sModel);
-        JOptionPane.showMessageDialog(null, spinner, "INPUT TICTACTOE GRID SIZE", JOptionPane.QUESTION_MESSAGE);
+        JComboBox difficultyOptions = new JComboBox(difficultyStrings);
+        GridLayout layout = new GridLayout(2,0);
+
+        myPanel.setLayout(layout);
+        myPanel.add(new JLabel("INPUT TICTACTOE GRID SIZE = "));
+        myPanel.add(spinner);
+        myPanel.add(new JLabel("BOT ENABLED = "));
+        myPanel.add(difficultyOptions);
+
+        JOptionPane.showMessageDialog(null, myPanel, "INPUT TICTACTOE GRID SIZE", JOptionPane.QUESTION_MESSAGE);
+        difficultyOptions.setSelectedIndex(1);
+
         int value = (int) spinner.getValue();
         return value;
     }    

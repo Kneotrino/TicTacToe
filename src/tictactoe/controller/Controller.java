@@ -7,6 +7,8 @@ package tictactoe.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
 import tictactoe.Gui.mainView;
 import javax.swing.JButton;
 import tictactoe.TicTacToe;
@@ -64,6 +66,8 @@ public class Controller {
     private final Map<String,Integer> mapField = new HashMap<>();
     private final Map<String,JButton> mapButton = new HashMap<>();
 
+    public boolean botEnabled = false;
+
     /**
      *
      * @param view
@@ -72,6 +76,12 @@ public class Controller {
     public Controller(mainView view, int Size) {
         View = view;        
         BOARD_SIZE = Size;
+    }
+
+    public Controller(mainView view,int Size, boolean botEnabled) {
+        this.BOARD_SIZE = Size;
+        View = view;
+        this.botEnabled = botEnabled;
     }
 
     private void showGame()
@@ -117,8 +127,12 @@ public class Controller {
             Button.setText(currentPlayer==-1?"X":"O");            
             mapField.put(key, currentPlayer);
             TURNS++;
-            checkWin(key);            
-            currentPlayer = currentPlayer * -1;            
+            checkWin(key);
+            //Change Player
+            currentPlayer = currentPlayer * -1;
+
+            if (botEnabled)
+                botInput();
             showUpdate();
         }
         else
@@ -128,7 +142,20 @@ public class Controller {
         
     }
 
-    
+    private int getRandomNumberInRange(int max) {
+        int min = 0;
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
+    private void botInput() {
+        System.out.println("Bot Move = "+ getRandomNumberInRange(BOARD_SIZE) +"-"+ getRandomNumberInRange(BOARD_SIZE) );
+    }
+
+
     private void setUpField() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {    
