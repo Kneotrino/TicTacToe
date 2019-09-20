@@ -43,6 +43,15 @@ public class Controller {
     public static final int CROSS_WON = -1;
     public static final int NOUGHT_WON = 1;
     private final mainView View;
+
+    public Map<String, Integer> getMapField() {
+        return mapField;
+    }
+
+    public Map<String, JButton> getMapButton() {
+        return mapButton;
+    }
+
     private final Map<String,Integer> mapField = new HashMap<>();
     private final Map<String,JButton> mapButton = new HashMap<>();
     /**
@@ -91,7 +100,7 @@ public class Controller {
         this.initGame();
     }
 
-    private void initGame() {
+    public void initGame() {
         currentState = PLAYING; 
         currentPlayer = CROSS;  
         TURNS = 0;
@@ -115,7 +124,7 @@ public class Controller {
         }
     }
     
-    private void PlayerInput(JButton Button,String key) {
+    public void PlayerInput(JButton Button,String key) {
         Integer get = mapField.get(key);
         if (get == EMPTY) {
             Button.setText(currentPlayer==-1?"X":"O");            
@@ -133,6 +142,7 @@ public class Controller {
         {
             mainView.invalidBox(currentPlayer==-1?CROSS_PLAYER:NOUGHT_PLAYER, "ERROR INPUT");            
         }
+//        System.out.println("Controller.PlayerInput = "+ currentPlayer +"; Move ="+ key+"; Turns "+TURNS);
     }
 
     private int getRandomNumberInRange(int max) {
@@ -145,11 +155,11 @@ public class Controller {
         return r.nextInt((max - min) + 1) + min;
     }
 
-    private String GenerateEasyBotMove( List<String> validBotMove){
+    public String GenerateEasyBotMove( List<String> validBotMove){
         return validBotMove.get(getRandomNumberInRange(validBotMove.size()));
     }
 
-    private List<String> getValidBotMove()
+    public List<String> getValidBotMove()
     {
         List<String> mutableList = Lists.newArrayList();
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -167,9 +177,24 @@ public class Controller {
         String move = "";
         if (level == 1)
             move = GenerateEasyBotMove(getValidBotMove());
+        else if (level == 2)
+            move = GenerateMediumBotMove(getValidBotMove());
         System.out.println("move = " + move);
         JButton jButton = mapButton.get(move);
         PlayerInput(jButton,move);
+    }
+
+    public void botInputPlayer(String key){
+        JButton jButton = mapButton.get(key);
+        PlayerInput(jButton,key);
+    }
+
+    /*
+    * Using MinMax Algorithme to move closer to win condition while distrubing opponnet movement
+    *
+    * */
+    public String GenerateMediumBotMove(List<String> validBotMove) {
+        return null;
     }
 
 
@@ -182,18 +207,24 @@ public class Controller {
         }                
     }
 
-    private void checkWin(String key) {        
-        String[] split = key.split("-");
-        int colomn = Integer.parseInt(split[0]);
-        int row = Integer.parseInt(split[1]);        
-        checkWinColumn(colomn);
-        checkWinRow(row);
-        checkWinDiagonalMajor();
-        checkWinDiagonalMinor();
-        checkTie();
+    public int getCheckWin(String key){
+        return checkWin(key);
     }
 
-    private void checkWinColumn(int colomn) {
+    private int checkWin(String key) {
+        String[] split = key.split("-");
+        int colomn = Integer.parseInt(split[0]);
+        int row = Integer.parseInt(split[1]);
+        checkTie();
+        return checkWinColumn(colomn) + checkWinRow(row) + checkWinDiagonalMajor() + checkWinDiagonalMinor();
+    }
+
+    private void Winning(String info){
+        System.out.println("info = " + info);
+//        showWinBox(info);
+    }
+
+    private int checkWinColumn(int colomn) {
         int WinningCondition = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             String keyCheck = colomn+"-"+i;
@@ -203,11 +234,14 @@ public class Controller {
             }            
         }
         if (WinningCondition == BOARD_SIZE) {
-            showWinBox(" HAS WON IN COLUMN " + (colomn + 1) ); 
+            Winning(" HAS WON IN COLUMN " + (colomn + 1) );
+//            System.out.println("currentPlayer = " + currentPlayer);
+            return currentPlayer;
         }
+        return 0;
     }
     
-    private void checkWinRow(int row) {
+    private int checkWinRow(int row) {
         int WinningCondition = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             String keyCheck = i+"-"+row;
@@ -217,12 +251,13 @@ public class Controller {
             }            
         }
         if (WinningCondition == BOARD_SIZE) {
-            showWinBox(" HAS WON IN ROW " + (row + 1) );            
+            Winning(" HAS WON IN ROW " + (row + 1) );
+            return currentPlayer;
         }
-        
+        return 0;
     }
 
-    private void checkWinDiagonalMajor() {
+    private int checkWinDiagonalMajor() {
         int WinningCondition = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             String keyCheck = i+"-"+i;
@@ -232,11 +267,13 @@ public class Controller {
             }            
         }
         if (WinningCondition == BOARD_SIZE) {
-            showWinBox(" HAS WON IN DIAGONAL MAJOR" );
-        }                
+            Winning(" HAS WON IN DIAGONAL MAJOR" );
+            return currentPlayer;
+        }
+        return 0;
     }
 
-    private void checkWinDiagonalMinor() {
+    private int checkWinDiagonalMinor() {
         int WinningCondition = 0;
         int k = BOARD_SIZE;
         for (int i=0; i < k; ++i) {
@@ -247,8 +284,10 @@ public class Controller {
             }            
         }
         if (WinningCondition == BOARD_SIZE) {
-            showWinBox(" HAS WON IN DIAGONAL MINOR" );
-        }                        
+            Winning(" HAS WON IN DIAGONAL MINOR" );
+            return currentPlayer;
+        }
+        return 0;
     }
 
     private void showWinBox(String info)
@@ -258,15 +297,11 @@ public class Controller {
         msg += "\nDO YOU WANT TO PLAY AGAIN?";
         currentState = currentPlayer;
         //Ask for restart
-        boolean askRestartBox = mainView.askRestartBox(msg, "WINNING");
+        boolean askRestartBox = false;
+        askRestartBox = mainView.askRestartBox(msg, "WINNING");
         if (askRestartBox) {
             restartGame();
-        } else
-        {
-            System.exit(currentState);
         }
-        
-        
     }   
 
     private void checkTie() {

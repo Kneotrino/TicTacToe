@@ -29,10 +29,10 @@ public class TicTacToe {
     /**
      * Initialize Controller and GUI
      */
-    public  static Controller controller;
-    private static final int BOARD_SIZE = 3; // Scalable 2>
+    private   static Controller controller;
+    private static final int BOARD_SIZE = 4; // Scalable 2>
     private static boolean BOT_ENABLED = true;
-    public  static mainView view;
+    private   static mainView view;
     
     /**
      * Main class
@@ -47,7 +47,7 @@ public class TicTacToe {
     /**
      * What to expect? just start play
      */
-    public void start() {
+    private void start() {
         controller.play();
     }
     
@@ -58,7 +58,6 @@ public class TicTacToe {
         Pair<Integer, Integer> TicTacToeGrid = mainView.TicTacToeBox(BOARD_SIZE);
         view.dispose();
         view = new mainView();
-
         controller = new Controller(view, TicTacToeGrid.getLeft() , TicTacToeGrid.getRight());
         controller.play();
     }        
