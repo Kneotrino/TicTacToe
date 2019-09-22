@@ -5,10 +5,7 @@
  */
 package tictactoe.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import com.google.common.collect.Lists;
 import tictactoe.Gui.mainView;
@@ -108,6 +105,10 @@ public class Controller {
         setUpButton();        
         showUpdate();
     }
+    public void  ChangePlayer(){
+//        System.out.println("OldPlayer = " + currentPlayer+"; NewPlayer = " + (currentPlayer * -1));
+        currentPlayer = currentPlayer * -1;
+    }
     
     private void setUpButton() {   
         View.PanelBoard.setLayout(new java.awt.GridLayout(BOARD_SIZE, BOARD_SIZE));            
@@ -142,7 +143,6 @@ public class Controller {
         {
             mainView.invalidBox(currentPlayer==-1?CROSS_PLAYER:NOUGHT_PLAYER, "ERROR INPUT");            
         }
-//        System.out.println("Controller.PlayerInput = "+ currentPlayer +"; Move ="+ key+"; Turns "+TURNS);
     }
 
     private int getRandomNumberInRange(int max) {
@@ -215,27 +215,32 @@ public class Controller {
         String[] split = key.split("-");
         int colomn = Integer.parseInt(split[0]);
         int row = Integer.parseInt(split[1]);
-        checkTie();
-        return checkWinColumn(colomn) + checkWinRow(row) + checkWinDiagonalMajor() + checkWinDiagonalMinor();
+        if (!checkTie())
+            return checkWinColumn(colomn) + checkWinRow(row) + checkWinDiagonalMajor() + checkWinDiagonalMinor();
+        else
+            return 0;
     }
 
     private void Winning(String info){
-        System.out.println("info = " + info);
-//        showWinBox(info);
+        System.out.println("info = " + currentPlayer + info);
+        showWinBox(info);
     }
 
     private int checkWinColumn(int colomn) {
+        Set<String> moves = new LinkedHashSet<>();
+
         int WinningCondition = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             String keyCheck = colomn+"-"+i;
             Integer field = mapField.get(keyCheck);
             if (field == currentPlayer) {
                 WinningCondition++;
+                moves.add(keyCheck);
             }            
         }
         if (WinningCondition == BOARD_SIZE) {
             Winning(" HAS WON IN COLUMN " + (colomn + 1) );
-//            System.out.println("currentPlayer = " + currentPlayer);
+            System.out.println("moves = " + moves);
             return currentPlayer;
         }
         return 0;
@@ -297,26 +302,29 @@ public class Controller {
         msg += "\nDO YOU WANT TO PLAY AGAIN?";
         currentState = currentPlayer;
         //Ask for restart
-        boolean askRestartBox = false;
-        askRestartBox = mainView.askRestartBox(msg, "WINNING");
-        if (askRestartBox) {
-            restartGame();
-        }
+//        boolean askRestartBox = false;
+//        askRestartBox = mainView.askRestartBox(msg, "WINNING");
+//        if (askRestartBox) {
+//            restartGame();
+//        }
     }   
 
-    private void checkTie() {
+    private boolean checkTie() {
         if (TURNS == BOARD_SIZE*BOARD_SIZE) {
             //Ask for restart
             boolean askRestartBox = mainView.askRestartBox(
                     "GAME END IN TIE\nDo you want to play again"
                     , "WINNING");
+
             if (askRestartBox) {
                 restartGame();
+                return true;
             } else
             {
                 System.exit(currentState);
             }
-        }                                
+        }
+        return false;
     }
 
     private void restartGame() {
