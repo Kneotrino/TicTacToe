@@ -82,11 +82,25 @@ public class Controller {
             this.botEnabled = true;
         }
         this.level = level;
-        System.out.println("BOARD_SIZE = " + BOARD_SIZE);
-        System.out.println("level = " + level);
-        System.out.println("botEnabled = " + botEnabled);
-        System.out.println("restartAble = " + restartAble);
+        System.out.print("BOARD_SIZE = " + BOARD_SIZE);
+        System.out.print(";level = " + level);
+        System.out.print(";botEnabled = " + botEnabled);
+        System.out.println(";restartAble = " + restartAble);
     }
+
+
+
+    private List<String> swap(String [] arr, int a, int b) {
+        if (a == b) {
+            return new ArrayList<>(Arrays.asList(arr));
+        }
+        String temp = arr[b];
+        arr[b] = arr[a];
+        arr[a] = temp;
+        return new ArrayList<>(Arrays.asList(arr));
+    }
+
+
 
     public Map<String, Integer> getMapField() {
         return mapField;
@@ -96,7 +110,7 @@ public class Controller {
         return mapButton;
     }
 
-    private void showGame()
+    public void showGame()
     {
         View.setVisible(true);    
     }

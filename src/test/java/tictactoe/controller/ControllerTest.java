@@ -1,13 +1,15 @@
 package tictactoe.controller;
 
 //import org.junit.jupiter.api.BeforeAll;
-import apple.laf.JRSUIConstants;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.junit.jupiter.api.Test;
 import tictactoe.Gui.mainView;
 
 import javax.swing.*;
 
-import java.util.List;
+import java.sql.Array;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ControllerTest {
 
-    static int Size = 4, level = 0;
+    static int Size = 2, level = 0;
     private static Controller controller;
 
     static {
@@ -26,8 +28,8 @@ class ControllerTest {
     @org.junit.jupiter.api.BeforeAll
     static void Init() {
         controller = new Controller(new mainView(), Size, level, false);
-//        controller.initGame();
-        controller.play();
+        controller.initGame();
+//        controller.showGame();
     }
 
     @Test
@@ -66,7 +68,7 @@ class ControllerTest {
     void TestBotMedium() {
         while (controller.getValidBotMove().size() > 0)
         {
-            String move = controller.GenerateEasyBotMove(controller.getValidBotMove());
+            String move = controller.GenerateMediumBotMove(controller.getValidBotMove());
             System.out.println("Controller.PlayerInput = "+ controller.currentPlayer +"; Move ="+ move+";" +
                     "\nTurns "+controller.TURNS+"; CheckWin = " + controller.getCheckWin(move));
             JButton jButton = controller.getMapButton().get(move);
@@ -77,10 +79,18 @@ class ControllerTest {
                 return;
             }
         }
-
     }
 
     @Test
-    void GeneratateTreeTest(){
+    void Generatatepossibility(){
+        Multimap<String, String> listMultimap = ArrayListMultimap.create();
+        List<String> validBotMove = controller.getValidBotMove();
+        System.out.println("validBotMove = " + validBotMove);
+
+        PermutationFactory instance = PermutationFactory.getInstance(validBotMove.stream().toArray(String[]::new));
+        Set<List<String>> permutateList = instance.getPermutateList();
+        instance.showpermutateList();
+
+        assertEquals(instance.factorialUsingForLoop(Size*Size),permutateList.size());
     }
 }
