@@ -37,18 +37,8 @@ public class Controller {
      * state of the game
      */
     public static final int PLAYING = 0;
-    public static final int CROSS_WON = -1;
-    public static final int NOUGHT_WON = 1;
     private final mainView View;
-
-    public Map<String, Integer> getMapField() {
-        return mapField;
-    }
-
-    public Map<String, JButton> getMapButton() {
-        return mapButton;
-    }
-
+    public static boolean RESTARTABLE= false;
     private final Map<String,Integer> mapField = new HashMap<>();
     private final Map<String,JButton> mapButton = new HashMap<>();
     /**
@@ -78,10 +68,32 @@ public class Controller {
             this.botEnabled = true;
         }
         this.level = level;
+        RESTARTABLE = true;
 
         System.out.println("BOARD_SIZE = " + BOARD_SIZE);
         System.out.println("level = " + level);
         System.out.println("botEnabled = " + botEnabled);
+    }
+
+    public Controller(mainView mainView, int Size, int level, boolean restartAble) {
+        this.BOARD_SIZE = Size;
+        View = mainView;
+        if (level > 0) {
+            this.botEnabled = true;
+        }
+        this.level = level;
+        System.out.println("BOARD_SIZE = " + BOARD_SIZE);
+        System.out.println("level = " + level);
+        System.out.println("botEnabled = " + botEnabled);
+        System.out.println("restartAble = " + restartAble);
+    }
+
+    public Map<String, Integer> getMapField() {
+        return mapField;
+    }
+
+    public Map<String, JButton> getMapButton() {
+        return mapButton;
     }
 
     private void showGame()
@@ -149,7 +161,7 @@ public class Controller {
         int min = 0;
         max--;
         if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
+            return min;
         }
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
@@ -219,6 +231,17 @@ public class Controller {
             return checkWinColumn(colomn) + checkWinRow(row) + checkWinDiagonalMajor() + checkWinDiagonalMinor();
         else
             return 0;
+    }
+
+    private void Tie() {
+        boolean askRestartBox = false;
+        if (RESTARTABLE)
+            askRestartBox = mainView.askRestartBox("GAME END IN TIE\nDo you want to play again", "TIE");
+        if (askRestartBox) {
+            restartGame();
+        } else {
+            System.exit(TURNS);
+        }
     }
 
     private void Winning(String info){
@@ -302,27 +325,20 @@ public class Controller {
         msg += "\nDO YOU WANT TO PLAY AGAIN?";
         currentState = currentPlayer;
         //Ask for restart
-//        boolean askRestartBox = false;
-//        askRestartBox = mainView.askRestartBox(msg, "WINNING");
-//        if (askRestartBox) {
-//            restartGame();
-//        }
+        boolean askRestartBox = false;
+        if (RESTARTABLE)
+            askRestartBox = mainView.askRestartBox(msg, "WINNING");
+        if (askRestartBox) {
+            restartGame();
+        } else {
+            System.exit(TURNS);
+        }
     }   
 
     private boolean checkTie() {
         if (TURNS == BOARD_SIZE*BOARD_SIZE) {
-            //Ask for restart
-            boolean askRestartBox = mainView.askRestartBox(
-                    "GAME END IN TIE\nDo you want to play again"
-                    , "WINNING");
-
-            if (askRestartBox) {
-                restartGame();
-                return true;
-            } else
-            {
-                System.exit(currentState);
-            }
+            Tie();
+            return true;
         }
         return false;
     }

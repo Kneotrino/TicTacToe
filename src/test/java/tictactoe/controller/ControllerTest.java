@@ -1,6 +1,7 @@
 package tictactoe.controller;
 
 //import org.junit.jupiter.api.BeforeAll;
+import apple.laf.JRSUIConstants;
 import org.junit.jupiter.api.Test;
 import tictactoe.Gui.mainView;
 
@@ -16,52 +17,45 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ControllerTest {
 
-    private static Controller controller = new Controller(new mainView(),4,0);
+    static int Size = 4, level = 0;
+    private static Controller controller;
+
+    static {
+    }
+
     @org.junit.jupiter.api.BeforeAll
     static void Init() {
-
+        controller = new Controller(new mainView(), Size, level, false);
 //        controller.initGame();
         controller.play();
     }
 
     @Test
     void TestSizeValidMove(){
-        assertEquals(16,controller.getValidBotMove().size());
+        assertEquals(Size*Size,controller.getValidBotMove().size());
         assertEquals(0,controller.TURNS);
     }
 
-//    @Test
-    void TestCheckWinCross(){
-        controller.getMapField().put("0-0",-1);
-        controller.getMapField().put("0-1",-1);
-        controller.getMapField().put("0-2",-1);
-        controller.getMapField().put("0-3",-1);
-        assertEquals(-1,controller.getCheckWin("0-3"));
-        System.out.println("controller.getMapField().get(\"0-0\") = " + controller.getMapField().get("0-0"));
-        System.out.println("controller.getMapField() = " + controller.getMapField());
-    }
-//    @Test
-    void TestCheckWinNought() {
-        controller.ChangePlayer();
-        controller.getMapField().put("1-0",1);
-        controller.getMapField().put("1-1",1);
-        controller.getMapField().put("1-2",1);
-        controller.getMapField().put("1-3",1);
-        assertEquals(1,controller.getCheckWin("1-3"));
+    void Sleep(long time){
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     void TestBotEasy() {
-        for (int i = 0; i < 15; i++) {
+
+        while (controller.getValidBotMove().size() > 0)
+        {
             String move = controller.GenerateEasyBotMove(controller.getValidBotMove());
-            System.out.println("Controller.PlayerInput = "+ controller.currentPlayer +"; Move ="+ move+"; Turns "+controller.TURNS);
+            System.out.println("Controller.PlayerInput = "+ controller.currentPlayer +"; Move ="+ move+";" +
+                    "\nTurns "+controller.TURNS+"; CheckWin = " + controller.getCheckWin(move));
             JButton jButton = controller.getMapButton().get(move);
-            try {
-                Thread.sleep(1000l);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             controller.PlayerInput(jButton,move);
+            this.Sleep(200l);
+            System.out.println();
             if (controller.getCheckWin(move) != 0) {
                 return;
             }
@@ -69,27 +63,24 @@ class ControllerTest {
     }
 
     @Test
-    void GeneratateTreeTest(){
-//        String move = controller.GenerateMediumBotMove(controller.getValidBotMove());
-//        System.out.println("move = " + move);
-        List<String> botMove = controller.getValidBotMove();
-        int sum = 0;
-        for (String m : botMove) {
-            controller.TURNS++;
-            System.out.println("Controller.PlayerInput = "+ controller.currentPlayer +"; Move ="+ m+"; Turns "+controller.TURNS);
-            JButton jButton = controller.getMapButton().get(m);
-            controller.PlayerInput(jButton,m);
-            controller.ChangePlayer();
-            if (controller.getCheckWin(m) != 0)
-            {
-                try {
-                    Thread.sleep(5000l);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+    void TestBotMedium() {
+        while (controller.getValidBotMove().size() > 0)
+        {
+            String move = controller.GenerateEasyBotMove(controller.getValidBotMove());
+            System.out.println("Controller.PlayerInput = "+ controller.currentPlayer +"; Move ="+ move+";" +
+                    "\nTurns "+controller.TURNS+"; CheckWin = " + controller.getCheckWin(move));
+            JButton jButton = controller.getMapButton().get(move);
+            controller.PlayerInput(jButton,move);
+            this.Sleep(200l);
+            System.out.println();
+            if (controller.getCheckWin(move) != 0) {
                 return;
             }
         }
-        System.out.println("sum = " + sum);
+
+    }
+
+    @Test
+    void GeneratateTreeTest(){
     }
 }
