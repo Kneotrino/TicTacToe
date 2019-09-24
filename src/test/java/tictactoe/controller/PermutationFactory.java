@@ -8,6 +8,15 @@ import java.util.*;
  */
 public class PermutationFactory {
 
+    public int CalculateWin(List<String> moves,int emulatedPlayer,boolean first){
+        Map<String,Integer> emulatedMapField = new HashMap<>();
+        for (String move: moves) {
+            emulatedMapField.put(move,emulatedPlayer);
+        }
+        return 0;
+    }
+
+
     public Set<List<String>> getPermutateList() {
         return permutateList;
     }

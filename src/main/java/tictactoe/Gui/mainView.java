@@ -208,10 +208,17 @@ public class mainView extends javax.swing.JFrame {
         myPanel.add(difficultyOptions);
 
         difficultyOptions.setSelectedIndex(1);
-        JOptionPane.showMessageDialog(null, myPanel, "INPUT TICTACTOE GRID SIZE", JOptionPane.QUESTION_MESSAGE);
+        int confirmDialog = JOptionPane.showConfirmDialog(null, myPanel, "GAME", JOptionPane.OK_CANCEL_OPTION);
+
+        System.out.println("confirmDialog = " + confirmDialog);
 
         int value = (int) spinner.getValue();
         Pair<Integer,Integer> selected = Pair.of(value,difficultyOptions.getSelectedIndex());
+
+        if (confirmDialog == JOptionPane.CANCEL_OPTION)
+            System.exit(-2);
+        if (confirmDialog == JOptionPane.CLOSED_OPTION)
+            System.exit(-1);
         return selected;
     }    
         
@@ -228,10 +235,7 @@ public class mainView extends javax.swing.JFrame {
                 , JOptionPane.OK_CANCEL_OPTION
                 , JOptionPane.INFORMATION_MESSAGE
         );
-        if (restart == JOptionPane.YES_OPTION)
-            return true;
-        else
-            return false;
+        return restart == JOptionPane.YES_OPTION;
     }    
     
 }

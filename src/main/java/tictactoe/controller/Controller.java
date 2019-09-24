@@ -89,7 +89,6 @@ public class Controller {
     }
 
 
-
     private List<String> swap(String [] arr, int a, int b) {
         if (a == b) {
             return new ArrayList<>(Arrays.asList(arr));
@@ -254,12 +253,11 @@ public class Controller {
         if (askRestartBox) {
             restartGame();
         } else {
-            System.exit(TURNS);
+//            System.exit(TURNS);
         }
     }
 
     private void Winning(String info){
-        System.out.println("info = " + currentPlayer + info);
         showWinBox(info);
     }
 
@@ -337,6 +335,7 @@ public class Controller {
         String msg = currentPlayer==-1?CROSS_PLAYER:NOUGHT_PLAYER; 
         msg += info;
         msg += "\nDO YOU WANT TO PLAY AGAIN?";
+        System.out.println("msg = " + msg);
         currentState = currentPlayer;
         //Ask for restart
         boolean askRestartBox = false;
@@ -345,7 +344,7 @@ public class Controller {
         if (askRestartBox) {
             restartGame();
         } else {
-            System.exit(TURNS);
+//            System.exit(TURNS);
         }
     }   
 
