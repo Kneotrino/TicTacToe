@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ControllerTest {
 
-    static int Size = 3, level = 0;
+    static int Size = 4, level = 0;
     private static PermutationFactory instance;
     private static Controller controller;
 
@@ -96,16 +96,67 @@ class ControllerTest {
         }
         Collection<List<String>> listCollection = listMultimap.get("1-1");
         System.out.println("collection.size() = " + listCollection.size());
-//        instance.showpermutateList();
 
         assertEquals(instance.factorialUsingForLoop(Size*Size),permutateList.size());
+        assertEquals(instance.factorialUsingForLoop(Size*Size)/9,listCollection.size());
+    }
+    @Test
+    void TestBestMove(){
+        List<String> validBotMove = controller.getValidBotMove();
+        System.out.println("validBotMove = " + validBotMove);
+
+        Set<List<String>> permutateList = instance.getPermutateList();
+
+        Multimap<String, List<String>> listMultimap = ArrayListMultimap.create();
+        permutateList.forEach(moves -> listMultimap.put(moves.get(0), moves));
+
+        Collection<List<String>> listCollection = listMultimap.get("1-1");
+
+        long summingWin = 0l;
+        long summingLose = 0l;
+        long summingTie = 0l;
+
+        for (List<String> moves : listCollection) {
+            int calculateWin = instance.CalculateWin(moves, 1, controller.BOARD_SIZE);
+            switch (calculateWin) {
+                case 0 :summingTie++;
+                break;
+                case 1 :summingWin++;
+                break;
+                case -1:summingLose++;
+                break;
+            }
+
+        }
+
+        System.out.println("collection.size() = " + listCollection.size());
+        System.out.println("summingWin = " + summingWin);
+        System.out.println("summingLose = " + summingLose);
+        System.out.println("summingTie = " + summingTie);
+
     }
 
     @Test
-    void testCalcutedWin() {
+    void TestCalcutedWin() {
         List<String> validBotMove = controller.getValidBotMove();
-        System.out.println("validBotMove = " + validBotMove);
-        int calculateWin = instance.CalculateWin(validBotMove, -1, true);
-        assertEquals(-1,calculateWin);
+//        System.out.println("validBotMove = " + validBotMove);
+        validBotMove.clear();//Tie
+
+        validBotMove.add("1-1"); // X
+        validBotMove.add("0-0"); // 0
+
+        validBotMove.add("2-2"); // X
+        validBotMove.add("2-0"); // 0
+
+        validBotMove.add("0-2"); // X
+        validBotMove.add("1-2"); // 0
+
+        validBotMove.add("0-1"); // X
+        validBotMove.add("2-1"); // 0
+
+        validBotMove.add("0-1"); // X
+
+        int calculateWin = instance.CalculateWin(validBotMove, -1, controller.BOARD_SIZE);
+        assertEquals(0,calculateWin);
     }
 }

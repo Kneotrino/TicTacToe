@@ -8,10 +8,121 @@ import java.util.*;
  */
 public class PermutationFactory {
 
-    public int CalculateWin(List<String> moves,int emulatedPlayer,boolean first){
-        Map<String,Integer> emulatedMapField = new HashMap<>();
+    int BOARD_SIZE = 0;
+    Map<String,Integer> EmulatedMapField;
+    int EmulatedPlayer = 0;
+    int EmulatedTurns  = 0;
+    public void  ChangePlayer(){
+        EmulatedPlayer = EmulatedPlayer * -1;
+    }
+
+    private void setUpField() {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                String key = i+"-"+j;
+                EmulatedMapField.put(key, 0);
+            }
+        }
+    }
+
+
+    public int CalculateWin(List<String> moves,int emulatedPlayer,int Size){
+        this.BOARD_SIZE = Size;
+        EmulatedMapField.clear();
+        EmulatedPlayer = emulatedPlayer;
+        EmulatedTurns = 0;
+
+        setUpField();
+
+        int win = 0;
+
         for (String move: moves) {
-            emulatedMapField.put(move,emulatedPlayer);
+            EmulatedMapField.put(move,EmulatedPlayer);
+            win = checkWin(move);
+            EmulatedTurns++;
+            if (win != 0)
+                break;
+            ChangePlayer();
+        }
+//        System.out.println("EmulatedMapField = " + EmulatedMapField.values());
+//        System.out.println("EmulatedTurns = " + EmulatedTurns+";" + "Player = " + EmulatedPlayer);
+        return win;
+    }
+
+    private boolean checkTie() {
+        return EmulatedTurns == BOARD_SIZE * BOARD_SIZE;
+    }
+
+    private int checkWin(String key) {
+//        System.out.println("key = " + key);
+        String[] split = key.split("-");
+        int colomn = Integer.parseInt(split[0]);
+        int row = Integer.parseInt(split[1]);
+        if (!checkTie())
+            return checkWinColumn(colomn) + checkWinRow(row) + checkWinDiagonalMajor() + checkWinDiagonalMinor();
+        else
+            return 0;
+    }
+
+
+
+    private int checkWinColumn(int colomn) {
+        int WinningCondition = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            String keyCheck = colomn+"-"+i;
+            Integer field = EmulatedMapField.get(keyCheck);
+            if (field == EmulatedPlayer) {
+                WinningCondition++;
+            }
+        }
+        if (WinningCondition == BOARD_SIZE) {
+            return EmulatedPlayer;
+        }
+        return 0;
+    }
+
+    private int checkWinRow(int row) {
+        int WinningCondition = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            String keyCheck = i+"-"+row;
+            Integer field = EmulatedMapField.get(keyCheck);
+            if (field == EmulatedPlayer) {
+                WinningCondition++;
+            }
+        }
+        if (WinningCondition == BOARD_SIZE) {
+            return EmulatedPlayer;
+        }
+        return 0;
+    }
+
+    private int checkWinDiagonalMajor() {
+        int WinningCondition = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            String keyCheck = i+"-"+i;
+            Integer field = EmulatedMapField.get(keyCheck);
+            if (field == EmulatedPlayer) {
+                WinningCondition++;
+            }
+        }
+        if (WinningCondition == BOARD_SIZE) {
+            return EmulatedPlayer;
+        }
+        return 0;
+    }
+
+    private int checkWinDiagonalMinor() {
+        int WinningCondition = 0;
+        int k = BOARD_SIZE;
+        for (int i=0; i < k; ++i) {
+            String keyCheck = i+"-"+(k - 1 - i);
+            Integer field = EmulatedMapField.get(keyCheck);
+            if (field == EmulatedPlayer) {
+                WinningCondition++;
+            }
+        }
+        if (WinningCondition == BOARD_SIZE) {
+            return EmulatedPlayer;
         }
         return 0;
     }
